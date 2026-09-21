@@ -48,7 +48,8 @@ h1{margin:0 0 6px;font-size:34px;letter-spacing:-.02em;line-height:1.1}
 .hero .tx{flex:1}
 .hero h2{margin:2px 0 4px;font-size:22px;letter-spacing:-.01em}
 .hero p{margin:0;color:var(--muted)}
-.hero .user{display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:var(--card);border:1px solid var(--hero-line);border-radius:8px;padding:5px 10px;font-size:13px}
+.creds{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.hero .user{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--hero-line);border-radius:8px;padding:5px 10px;font-size:13px}
 .hero .user code{font:600 13px ui-monospace,Menlo,monospace;color:var(--ink)}
 .copy{border:0;background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-size:12px;padding:0 2px}
 .copy:hover{color:var(--ink)}
@@ -105,6 +106,7 @@ h1{margin:0 0 6px;font-size:34px;letter-spacing:-.02em;line-height:1.1}
   .hero{flex-direction:column;align-items:stretch;gap:14px;padding:18px;margin-bottom:22px}
   .hero .ic{display:none}
   .hero h2{font-size:18px;word-break:break-all}
+  .creds{flex-direction:column}
   .hero .user{display:flex;justify-content:space-between}
   .copy{min-height:32px;padding:0 8px}
   .btn{justify-content:center;min-height:48px;font-size:15px}
@@ -289,6 +291,8 @@ const GROUP_OF={
  "insights":"rapor",
 };
 const TABAN=new Set(BASE.map(b=>b.app));
+const DEFAULT_PASS="Turksab2026!";
+function cp(b,t){try{navigator.clipboard.writeText(t)}catch(e){}b.textContent="kopyalandı";setTimeout(()=>b.textContent="kopyala",1200)}
 const LBL={ok:"hazır",warn:"ön koşul",ext:"dış servis"};
 const ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>';
 const ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>';
@@ -314,7 +318,7 @@ function render(){
   <div class="hero">
     <div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></div>
     <div class="tx"><p class="eyebrow" style="margin:0 0 2px">Önce giriş yap</p><h2>${s.id}.metaframer.net</h2><p>Bağlantılar bu sitede açılır; oturum yoksa giriş sayfasına düşer. Chrome ilk girişte parolayı kaydetmeyi teklif eder, kabul edersen sonrakiler tek tık.</p>
-    <div class="user">kullanıcı <code id="u">${s.user}</code><button class="copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${s.user}');this.textContent='kopyalandı';setTimeout(()=>this.textContent='kopyala',1200)">kopyala</button></div></div>
+    <div class="creds"><div class="user">kullanıcı <code>${s.user}</code><button class="copy" onclick="cp(this,'${s.user}')">kopyala</button></div><div class="user">parola <code>${s.pass||DEFAULT_PASS}</code><button class="copy" onclick="cp(this,'${s.pass||DEFAULT_PASS}')">kopyala</button></div></div></div>
     <a class="btn" href="${host}/login" target="_blank" rel="noopener">Giriş yap <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
   <div class="tools">
