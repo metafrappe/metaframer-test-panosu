@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metaframer Test Panosu</title>
+<meta name="description" content="bench-0022 üzerindeki 8 test sitesi ve kurulu Frappe uygulamalarının doğrudan açılış adresleri">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--muted:#5c6470;--line:#e3e6ea;--accent:#1f6feb;--ok:#1a7f37;--warn:#9a6700;--ext:#8250df;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1216;--card:#171b21;--ink:#e6e8eb;--muted:#9aa4b2;--line:#2a313b;--accent:#6ea8ff;--ok:#4cc26b;--warn:#e3b341;--ext:#c297ff;--chip:#1f2630}}
+:root[data-theme="dark"]{--bg:#0f1216;--card:#171b21;--ink:#e6e8eb;--muted:#9aa4b2;--line:#2a313b;--accent:#6ea8ff;--ok:#4cc26b;--warn:#e3b341;--ext:#c297ff;--chip:#1f2630}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif}
+header{padding:28px 16px 12px;max-width:1100px;margin:0 auto}
+h1{margin:0 0 4px;font-size:24px}
+.sub{color:var(--muted);margin:0 0 16px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+input[type=search]{flex:1;min-width:220px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:15px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:14px}
+.tab[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+main{max-width:1100px;margin:0 auto;padding:8px 16px 48px}
+.site{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0}
+.site h2{margin:0;font-size:20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.site h2 a{color:var(--accent);text-decoration:none;font-size:15px;font-weight:500}
+.meta{color:var(--muted);margin:6px 0 12px;font-size:14px}
+.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:var(--chip);color:var(--muted)}
+.badge.ok{color:var(--ok)}.badge.warn{color:var(--warn)}.badge.ext{color:var(--ext)}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;vertical-align:top;padding:9px 8px;border-top:1px solid var(--line);font-size:14px}
+th{color:var(--muted);font-weight:600;border-top:0}
+td.app{white-space:nowrap;font-weight:600}
+td.links a{display:inline-block;margin:0 10px 4px 0;color:var(--accent);text-decoration:none;word-break:break-all}
+td.links a:hover{text-decoration:underline}
+td.note{color:var(--muted)}
+td.chk{width:34px;text-align:center}
+td.chk input{width:18px;height:18px;cursor:pointer}
+tr.done td{opacity:.55}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:10px 0 0}
+.count{color:var(--muted);font-size:13px;margin-left:auto}
+.hidden{display:none}
+footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
+@media (max-width:640px){td.app{white-space:normal}th:nth-child(4),td.note{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Metaframer Test Panosu</h1>
+  <p class="sub">bench-0022 · Frappe v16 · 8 site · 56 uygulama. Her uygulama için siteden doğrudan açılan adres. Önce ilgili siteye giriş yap, sonra bağlantıya tıkla. Kutuyu işaretle, kontrol ettiğin bu tarayıcıda hatırlanır.</p>
+  <div class="tools">
+    <input type="search" id="q" placeholder="Uygulama veya site ara… (ör. whatsapp, pos, healthcare)">
+    <span class="count" id="count"></span>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="legend">
+    <span><span class="badge ok">hazır</span> kurulumla açılır</span>
+    <span><span class="badge warn">ön koşul</span> sitede kayıt açmak gerekir</span>
+    <span><span class="badge ext">dış servis</span> API anahtarı veya ayrı sunucu ister</span>
+  </div>
+</header>
+<main id="main"></main>
+<footer>
+  Bench: press.metaframer.net → Benches → Metaframer v16 Apps. Kullanıcı: erp-test'te demo@demo.com, diğerlerinde test@test.com. Uygulama adları press'teki başlıklardır; adresler DocType adının kebab-case biçimidir.
+</footer>
+<script>
+const BASE=[
+ {app:"frappe",links:["/desk"],note:"Desk ana ekranı",tag:"ok"},
+ {app:"erpnext",links:["/app/home","/app/selling","/app/stock","/app/accounting"],note:"ERP çekirdeği",tag:"ok"},
+ {app:"payments",links:["/app/payment-gateway"],note:"Ödeme geçitleri",tag:"ok"},
+ {app:"hrms",links:["/hrms","/app/hr"],note:"/hrms çalışanın ekranı, kullanıcıya bağlı Çalışan kaydı ister; /app/hr yönetici tarafı",tag:"warn"},
+ {app:"Print Designer",links:["/app/print-format"],note:"Yeni Print Format → Print Designer",tag:"ok"},
+ {app:"PDF on Submit",links:["/app/pdf-on-submit-settings"],note:"Onayda otomatik PDF",tag:"ok"},
+ {app:"Preview Attachment",links:["/app/item"],note:"Arayüzü yok; bir kayda ek yükle, yanında göz simgesi çıkar",tag:"ok"},
+ {app:"ERPNext Turkish Delight",links:["/app/erpnext-turkish-settings","/app/td-einvoice-settings","/app/td-einvoice-inbox"],note:"Türkiye ayarları, e-Fatura",tag:"ok"},
+];
+const SITES=[
+ {id:"erp-test",title:"erp-test",sector:"Ticaret · e-ticaret · dağıtım (ilk test sitesi)",user:"demo@demo.com",apps:[
+  BASE[0],BASE[1],BASE[2],BASE[3],
+  {app:"ERPNext Shipping",links:["/app/shipment","/app/letmeship","/app/packlink","/app/sendcloud"],note:"Yurt dışı kargo; LetMeShip/Packlink/SendCloud hesabı ister",tag:"ext"},
+  {app:"insights",links:["/insights"],note:"İş zekası",tag:"ok"},
+  {app:"Wiki",links:["/app/wiki-space"],note:"Önce Wiki Space aç, verdiği yol sitede yayımlanır",tag:"warn"},
+  {app:"crm",links:["/crm"],note:"CRM arayüzü",tag:"ok"},
+  {app:"Telephony",links:["/app/tp-twilio-settings","/app/tp-exotel-settings","/app/tp-call-log"],note:"Twilio/Exotel hesabı ister",tag:"ext"},
+  {app:"helpdesk",links:["/helpdesk"],note:"Destek masası",tag:"ok"},
+  {app:"gameplan",links:["/g"],note:"Ekip tartışma",tag:"ok"},
+  {app:"raven",links:["/raven"],note:"Mesajlaşma",tag:"ok"},
+  BASE[4],
+  {app:"Frappe Drive",links:["/drive"],note:"Dosya arayüzü",tag:"ok"},
+  {app:"LOGO Tiger Integration",links:["/app/logo-sql-settings","/app/logo-object-mapping","/app/logo-object-service-settings"],note:"LOGO SQL Server erişimi ister",tag:"ext"},
+  {app:"Yurtiçi Kargo ERPNext",links:["/app/yurtici-kargo-ayarlari"],note:"Yurtiçi API bilgisi ister",tag:"ext"},
+  BASE[7],
+  {app:"Metabase Integration",links:["/app/metabase-settings","/app/metabase-dashboard"],note:"Ayrı Metabase sunucusu ister",tag:"ext"},
+  {app:"Ecommerce Integrations",links:["/app/shopify-setting","/app/amazon-sp-api-settings","/app/unicommerce-settings","/app/zenoti-settings","/app/ecommerce-integration-log"],note:"Shopify/Amazon/Unicommerce/Zenoti; Trendyol yok",tag:"ext"},
+  BASE[5],
+  {app:"DHL eCommerce Cargo",links:["/app/dhl-cargo-settings","/app/dhl-barcode","/app/dhl-return-order"],note:"MNG/DHL API bilgisi ister",tag:"ext"},
+ ]},
+ {id:"klinik-test",title:"klinik-test",sector:"Sağlık · poliklinik · diş · fizik tedavi",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"Healthcare (Marley)",links:["/app/healthcare","/app/outpatient","/app/inpatient","/app/diagnostics","/app/patient","/patient-portal"],note:"Hasta, poliklinik, yatan hasta, laboratuvar; /patient-portal hasta ekranı",tag:"ok"},
+  {app:"crm",links:["/crm"],note:"CRM arayüzü",tag:"ok"},
+  {app:"Telephony",links:["/app/tp-twilio-settings","/app/tp-exotel-settings","/app/tp-call-log"],note:"Twilio/Exotel hesabı ister",tag:"ext"},
+  {app:"helpdesk",links:["/helpdesk"],note:"Destek masası",tag:"ok"},
+  {app:"Frappe Drive",links:["/drive"],note:"Dosya arayüzü",tag:"ok"},
+  {app:"WhatsApp Integration",links:["/app/whatsapp-settings","/app/whatsapp-account","/app/whatsapp-message","/app/whatsapp-template","/app/whatsapp-log"],note:"Meta Business hesabı ve kalıcı token ister",tag:"ext"},
+  {app:"Frappe Permission Manager",links:["/app/user-permissions-manager"],note:"Toplu kullanıcı yetkisi",tag:"ok"},
+  {app:"Meet",links:["/meet"],note:"SFU sunucusu yok: 'SFU secret not configured' verir",tag:"ext"},
+  {app:"Frappe S3 Attachment",links:["/app/s3-file-attachment"],note:"S3 bucket ister",tag:"ext"},
+  {app:"Mail",links:["/mail","/app/mail-settings"],note:"Stalwart posta sunucusu yok: beyaz ekran verir",tag:"ext"},
+ ]},
+ {id:"restoran-test",title:"restoran-test",sector:"Restoran · kafe",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"URY yönetim",links:["/ury/dashboard","/ury/menu","/ury/table","/ury/room","/ury/branch","/ury/pos-profile","/ury/user","/ury/production-unit","/ury/reports"],note:"Restoran paneli; menü ve POS profili boş",tag:"warn"},
+  {app:"URY kasa (yeni)",links:["/pos/dashboard","/pos/pos","/pos/tables","/pos/orders","/pos/order"],note:"Branch → Restaurant → Room → Table → Menu → POS Profile zinciri gerekir",tag:"warn"},
+  {app:"URY kasa V1",links:["/urypos/Table","/urypos/Menu","/urypos/Cart","/urypos/PosOpen","/urypos/PosClose"],note:"Eski Vue kasa",tag:"warn"},
+  {app:"URY Mosaic",links:["/mosaic/"],note:"Mutfak ekranı; URY Production Unit ister",tag:"warn"},
+  {app:"URY self-servis",links:["/order/"],note:"QR ile müşteri siparişi; Self Ordering Profile ister",tag:"warn"},
+  {app:"URY Desk",links:["/app/ury","/app/ury-restaurant","/app/ury-room","/app/ury-table","/app/ury-menu","/app/ury-kot","/app/ury-order"],note:"Desk tarafı kayıtlar",tag:"ok"},
+  {app:"WhatsApp Integration",links:["/app/whatsapp-settings","/app/whatsapp-account","/app/whatsapp-message","/app/whatsapp-template","/app/whatsapp-log"],note:"Meta Business hesabı ister",tag:"ext"},
+  {app:"Expenses",links:["/app/expenses-settings","/app/expense-type","/app/expense-item","/app/expense","/app/expenses-request","/app/expenses-entry"],note:"Alpha sürüm, üretime hazır değil",tag:"warn"},
+  {app:"Yurtiçi Kargo ERPNext",links:["/app/yurtici-kargo-ayarlari"],note:"Yurtiçi API bilgisi ister",tag:"ext"},
+  {app:"insights",links:["/insights"],note:"İş zekası",tag:"ok"},
+ ]},
+ {id:"perakende-test",title:"perakende-test",sector:"Mağaza · e-ticaret · mobil uygulama",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"POSNext",links:["/pos","/app/pos-profile","/app/pos-settings","/app/pos-opening-shift","/app/pos-offer","/app/pos-coupon"],note:"Önce POS Profile, ödeme yöntemi, kullanıcı ataması ve ürün gerekir",tag:"warn"},
+  {app:"Ghost",links:["/app/ghost-settings","/app/ghost-lead","/app/ghost-conversion-log"],note:"OAuth Client ister; misafir/OTP kimlik",tag:"ext"},
+  {app:"Frappe S3 Improwised",links:["/app/s3-file-attachment"],note:"S3 bucket ister (Improwised dalı)",tag:"ext"},
+  {app:"NextAssist",links:["/nextassist","/nextassist/userguide"],note:"LLM API anahtarı ister",tag:"ext"},
+  {app:"Ecommerce Integrations",links:["/app/shopify-setting","/app/amazon-sp-api-settings","/app/unicommerce-settings","/app/zenoti-settings","/app/ecommerce-integration-log"],note:"Mağaza API'leri ister; Trendyol yok",tag:"ext"},
+  {app:"Yurtiçi Kargo ERPNext",links:["/app/yurtici-kargo-ayarlari"],note:"Yurtiçi API bilgisi ister",tag:"ext"},
+  {app:"DHL eCommerce Cargo",links:["/app/dhl-cargo-settings","/app/dhl-barcode","/app/dhl-return-order"],note:"MNG/DHL API bilgisi ister",tag:"ext"},
+  {app:"LOGO Tiger Integration",links:["/app/logo-sql-settings","/app/logo-object-mapping"],note:"LOGO SQL Server erişimi ister",tag:"ext"},
+  {app:"Metabase Integration",links:["/app/metabase-settings","/app/metabase-dashboard"],note:"Ayrı Metabase sunucusu ister",tag:"ext"},
+ ]},
+ {id:"egitim-test",title:"egitim-test",sector:"Okul · kurs · kantin POS",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"Education",links:["/app/education","/app/student","/app/program","/app/course","/app/fees"],note:"Okul yönetimi",tag:"ok"},
+  {app:"lms (Frappe Learning)",links:["/lms"],note:"Kurs portalı; kurs açmadan boş",tag:"ok"},
+  {app:"Frappe Appointment",links:["/app/appointment-settings","/app/appointment-group"],note:"Toplantı randevusu; Google Calendar/Zoom ister; açık sayfa /schedule/<grup>",tag:"ext"},
+  {app:"POS Awesome",links:["/app/posapp","/app/pos-profile"],note:"POS Profili 'Kantin' hazır: Egitim Test, Nakit, ürünler Su/Tost/Defter, müşteri Öğrenci",tag:"ok"},
+  {app:"DocType Permission",links:["/app/doctype-permission","/app/doctype-permission-level"],note:"Kısıtla-sonra-izin-ver yetki",tag:"ok"},
+  {app:"Wiki",links:["/app/wiki-space"],note:"Önce Wiki Space aç",tag:"warn"},
+  {app:"gameplan",links:["/g"],note:"Ekip tartışma",tag:"ok"},
+  {app:"raven",links:["/raven"],note:"Mesajlaşma",tag:"ok"},
+  {app:"Frappe Drive",links:["/drive"],note:"Dosya arayüzü",tag:"ok"},
+ ]},
+ {id:"finans-test",title:"finans-test",sector:"Leasing · faktoring · AB'ye ihracat",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"Frappe Lending",links:["/app/lending","/app/loan-product","/app/loan-application","/app/loan"],note:"Kredi akışı; Loan Product ile başla",tag:"ok"},
+  {app:"EU eInvoice",links:["/app/e-invoice-settings","/app/e-invoice-import"],note:"ZUGFeRD/XRechnung, AB formatı; GİB değil",tag:"ok"},
+  {app:"Payments Processor",links:["/app/payments-processor-configuration"],note:"Toplu ödeme ve vade",tag:"ok"},
+  {app:"OIDC Extended",links:["/app/oidc-extended-configuration","/app/oidc-group-to-role-mapping","/app/social-login-key"],note:"Keycloak gibi kimlik sağlayıcı ister",tag:"ext"},
+  {app:"Ask ALYF",links:["/app/ask-alyf-settings","/app/ask-alyf-conversation"],note:"LLM API anahtarı ister; sonra Desk'te sohbet balonu",tag:"ext"},
+  {app:"insights",links:["/insights"],note:"İş zekası",tag:"ok"},
+  {app:"Metabase Integration",links:["/app/metabase-settings","/app/metabase-dashboard"],note:"Ayrı Metabase sunucusu ister",tag:"ext"},
+  {app:"LOGO Tiger Integration",links:["/app/logo-sql-settings","/app/logo-object-mapping"],note:"LOGO SQL Server erişimi ister",tag:"ext"},
+  {app:"crm",links:["/crm"],note:"CRM arayüzü",tag:"ok"},
+ ]},
+ {id:"lojistik-test",title:"lojistik-test",sector:"Forwarder · nakliye acentesi",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"Cargo Management",links:["/app/parcels","/app/shipments","/app/warehouse-operations","/app/parcel","/app/cargo-shipment","/app/warehouse-receipt","/app/carrier"],note:"WIP uygulama; parsel ve depo kabul çalışır",tag:"warn"},
+  {app:"WorkBoard",links:["/app/workboard","/app/wb-task","/app/workboard-settings"],note:"Süreli görev takibi",tag:"ok"},
+  {app:"MINutes Of Meeting",links:["/app/mom","/app/mom-followup","/app/mom-settings"],note:"Toplantı notu ve takip",tag:"ok"},
+  {app:"Yurtiçi Kargo ERPNext",links:["/app/yurtici-kargo-ayarlari"],note:"Yurtiçi API bilgisi ister",tag:"ext"},
+  {app:"DHL eCommerce Cargo",links:["/app/dhl-cargo-settings","/app/dhl-barcode","/app/dhl-return-order"],note:"MNG/DHL API bilgisi ister",tag:"ext"},
+  {app:"Telephony",links:["/app/tp-twilio-settings","/app/tp-exotel-settings","/app/tp-call-log"],note:"Twilio/Exotel hesabı ister",tag:"ext"},
+  {app:"helpdesk",links:["/helpdesk"],note:"Destek masası",tag:"ok"},
+  {app:"raven",links:["/raven"],note:"Mesajlaşma",tag:"ok"},
+ ]},
+ {id:"bt-ajans-test",title:"bt-ajans-test",sector:"BT hizmet · yazılım ajansı · platform ve AI laboratuvarı",user:"test@test.com",apps:[
+  ...BASE,
+  {app:"IT Management",links:["/app/it-management"],note:"BT envanteri, lisans, hesap",tag:"ok"},
+  {app:"Frappe Suite",links:["/suite","/drive","/writer","/sheets","/slides","/meet","/mail","/calendar"],note:"Drive/Writer/Sheets/Slides çalışır; Meet SFU, Mail Stalwart ister",tag:"ext"},
+  {app:"Studio",links:["/studio"],note:"Görsel uygulama kurucu",tag:"ok"},
+  {app:"builder",links:["/builder"],note:"Web sitesi kurucu",tag:"ok"},
+  {app:"Doppio",links:["/app/installed-applications"],note:"Arayüzü yok; yalnız bench CLI aracı",tag:"warn"},
+  {app:"Frappe Types",links:["/app/type-generation-settings"],note:"TypeScript tip üretimi; press'te işlevsiz",tag:"warn"},
+  {app:"Swagger UI",links:["/swagger"],note:"Özel app'in api klasörünü belgeler; yoksa boş",tag:"warn"},
+  {app:"Frappe Assistant Core",links:["/app/assistant-core-settings","/app/fac-tool-configuration","/app/assistant-audit-log"],note:"MCP sunucusu; dışarıdan Claude/ChatGPT bağlanır",tag:"ext"},
+  {app:"Flow",links:["/app/flow-provider","/app/flow-model","/app/flow-agent"],note:"LLM API anahtarı ister; Desk'te Flow paneli",tag:"ext"},
+  {app:"helpdesk",links:["/helpdesk"],note:"Destek masası",tag:"ok"},
+  {app:"gameplan",links:["/g"],note:"Ekip tartışma",tag:"ok"},
+  {app:"raven",links:["/raven"],note:"Mesajlaşma",tag:"ok"},
+  {app:"Wiki",links:["/app/wiki-space"],note:"Önce Wiki Space aç",tag:"warn"},
+  {app:"insights",links:["/insights"],note:"İş zekası",tag:"ok"},
+  {app:"Telephony",links:["/app/tp-twilio-settings","/app/tp-exotel-settings","/app/tp-call-log"],note:"Twilio/Exotel hesabı ister",tag:"ext"},
+ ]},
+];
+const LBL={ok:"hazır",warn:"ön koşul",ext:"dış servis"};
+let store={};try{store=JSON.parse(localStorage.getItem("mf-checked")||"{}")}catch(e){store={}}
+function save(){try{localStorage.setItem("mf-checked",JSON.stringify(store))}catch(e){}}
+let active="all";
+const tabs=document.getElementById("tabs");
+[["all","Tümü"],...SITES.map(s=>[s.id,s.title])].forEach(([id,label])=>{const b=document.createElement("button");b.className="tab";b.textContent=label;b.setAttribute("aria-pressed",id===active);b.onclick=()=>{active=id;[...tabs.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render()};tabs.appendChild(b)});
+function render(){
+  const q=(document.getElementById("q").value||"").toLowerCase().trim();
+  const main=document.getElementById("main");main.innerHTML="";let shown=0,total=0;
+  SITES.forEach(s=>{
+    if(active!=="all"&&active!==s.id)return;
+    const host="https://"+s.id+".metaframer.net";
+    const rows=s.apps.filter(a=>!q||a.app.toLowerCase().includes(q)||s.id.includes(q)||a.note.toLowerCase().includes(q));
+    total+=s.apps.length;if(!rows.length)return;shown+=rows.length;
+    const sec=document.createElement("section");sec.className="site";
+    sec.innerHTML=`<h2>${s.title}<a href="${host}/login" target="_blank" rel="noopener">giriş ↗</a><a href="${host}/desk" target="_blank" rel="noopener">desk ↗</a><a href="${host}/app/installed-applications" target="_blank" rel="noopener">kurulu uygulamalar ↗</a></h2>
+    <p class="meta">${s.sector} · kullanıcı ${s.user} · ${s.apps.length} uygulama</p>
+    <table><thead><tr><th></th><th>Uygulama</th><th>Aç</th><th>Not</th></tr></thead><tbody></tbody></table>`;
+    const tb=sec.querySelector("tbody");
+    rows.forEach(a=>{
+      const key=s.id+"|"+a.app;const tr=document.createElement("tr");if(store[key])tr.className="done";
+      tr.innerHTML=`<td class="chk"><input type="checkbox" ${store[key]?"checked":""} title="Kontrol edildi"></td>
+      <td class="app">${a.app} <span class="badge ${a.tag}">${LBL[a.tag]}</span></td>
+      <td class="links">${a.links.map(l=>`<a href="${host}${l}" target="_blank" rel="noopener">${l}</a>`).join("")}</td>
+      <td class="note">${a.note}</td>`;
+      tr.querySelector("input").onchange=e=>{store[key]=e.target.checked;save();tr.className=e.target.checked?"done":""};
+      tb.appendChild(tr)});
+    main.appendChild(sec)});
+  document.getElementById("count").textContent=q||active!=="all"?`${shown} satır`:`${total} uygulama satırı`;
+}
+document.getElementById("q").addEventListener("input",render);render();
+</script>
+</body>
+</html>
