@@ -32,4 +32,4 @@ Etiketler: **hazır** kurulumla açılır · **ön koşul** sitede kayıt açmak
 - **Customer** kaydında Payment Terms Template zorunlu (bir uygulamanın Property Setter'ı). Müşteri açmadan önce bir şablon oluştur; egitim-test'te "Peşin" var.
 - Türkiye hesap planı şablonunda uç hesap az; POS için satış, maliyet ve silme hesapları elle açıldı (egitim-test).
 
-Adresler `index.html` içindeki `SITES` dizisinde tutulur; yeni site veya uygulama için o diziye satır ekle.
+Adresler `index.html` içindeki `SITES` dizisinde tutulur; grup eşlemesi `GROUP_OF` sözlüğünde. Yeni site veya uygulama için o diziye satır ekle.

@@ -5,63 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Metaframer Test Panosu</title>
 <meta name="description" content="bench-0022 üzerindeki 8 test sitesi ve kurulu Frappe uygulamalarının doğrudan açılış adresleri">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--muted:#5c6470;--line:#e3e6ea;--accent:#1f6feb;--ok:#1a7f37;--warn:#9a6700;--ext:#8250df;--chip:#eef1f5}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1216;--card:#171b21;--ink:#e6e8eb;--muted:#9aa4b2;--line:#2a313b;--accent:#6ea8ff;--ok:#4cc26b;--warn:#e3b341;--ext:#c297ff;--chip:#1f2630}}
-:root[data-theme="dark"]{--bg:#0f1216;--card:#171b21;--ink:#e6e8eb;--muted:#9aa4b2;--line:#2a313b;--accent:#6ea8ff;--ok:#4cc26b;--warn:#e3b341;--ext:#c297ff;--chip:#1f2630}
+:root{--side:#14231d;--side-2:#1c2f27;--side-ink:#e9efe9;--side-muted:#9fb3a6;--bg:#f4f5f2;--card:#ffffff;--ink:#1a1f1c;--muted:#6b756f;--line:#e4e7e1;--accent:#1f4d3a;--accent-ink:#fff;--hero:#eef3ea;--hero-line:#d9e4d4;--t1:#e5efe6;--t1i:#2f6b4f;--t2:#ece7f7;--t2i:#6b4fb0;--t3:#e3ecf7;--t3i:#2f5f9e;--t4:#f7efe0;--t4i:#9a6a1a;--ok:#1a7f37;--warn:#9a6700;--ext:#6b4fb0;--chip:#f0f2ee}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1412;--card:#161d19;--ink:#e6ebe7;--muted:#98a59d;--line:#26312b;--hero:#16221c;--hero-line:#254134;--t1:#1e3328;--t1i:#8fd3ad;--t2:#2a2440;--t2i:#c3aef7;--t3:#1f2a3a;--t3i:#9dc0f0;--t4:#3a2f1a;--t4i:#f0c46a;--chip:#1d2622;--ok:#5fcf7f;--warn:#e3b341;--ext:#c3aef7}}
+:root[data-theme="dark"]{--bg:#0f1412;--card:#161d19;--ink:#e6ebe7;--muted:#98a59d;--line:#26312b;--hero:#16221c;--hero-line:#254134;--t1:#1e3328;--t1i:#8fd3ad;--t2:#2a2440;--t2i:#c3aef7;--t3:#1f2a3a;--t3i:#9dc0f0;--t4:#3a2f1a;--t4i:#f0c46a;--chip:#1d2622;--ok:#5fcf7f;--warn:#e3b341;--ext:#c3aef7}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif}
-header{padding:28px 16px 12px;max-width:1100px;margin:0 auto}
-h1{margin:0 0 4px;font-size:24px}
-.sub{color:var(--muted);margin:0 0 16px}
-.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-input[type=search]{flex:1;min-width:220px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:15px}
-.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 0}
-.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:14px}
-.tab[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
-main{max-width:1100px;margin:0 auto;padding:8px 16px 48px}
-.site{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin:14px 0}
-.site h2{margin:0;font-size:20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.site h2 a{color:var(--accent);text-decoration:none;font-size:15px;font-weight:500}
-.meta{color:var(--muted);margin:6px 0 12px;font-size:14px}
-.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600;background:var(--chip);color:var(--muted)}
-.badge.ok{color:var(--ok)}.badge.warn{color:var(--warn)}.badge.ext{color:var(--ext)}
-table{width:100%;border-collapse:collapse}
-th,td{text-align:left;vertical-align:top;padding:9px 8px;border-top:1px solid var(--line);font-size:14px}
-th{color:var(--muted);font-weight:600;border-top:0}
-td.app{white-space:nowrap;font-weight:600}
-td.links a{display:inline-block;margin:0 10px 4px 0;color:var(--accent);text-decoration:none;word-break:break-all}
-td.links a:hover{text-decoration:underline}
-td.note{color:var(--muted)}
-td.chk{width:34px;text-align:center}
-td.chk input{width:18px;height:18px;cursor:pointer}
-tr.done td{opacity:.55}
-.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:10px 0 0}
-.count{color:var(--muted);font-size:13px;margin-left:auto}
-.hidden{display:none}
-footer{max-width:1100px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
-@media (max-width:640px){td.app{white-space:normal}th:nth-child(4),td.note{display:none}}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+.layout{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+aside{background:var(--side);color:var(--side-ink);padding:22px 16px;display:flex;flex-direction:column;gap:18px;position:sticky;top:0;height:100vh;overflow-y:auto;overflow-x:hidden}
+.brand{display:flex;gap:12px;align-items:center;padding:4px 6px}
+.brand .logo{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;background:var(--side-2)}
+.brand b{font-size:19px;font-weight:700;letter-spacing:-.01em;display:block;line-height:1.1}
+.brand small{font-size:10px;letter-spacing:.18em;color:var(--side-muted);text-transform:uppercase}
+.sect{font-size:10px;letter-spacing:.18em;color:var(--side-muted);text-transform:uppercase;padding:6px 8px 0}
+.sites{display:flex;flex-direction:column;gap:4px}
+.site-btn{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid transparent;background:transparent;color:var(--side-ink);padding:9px 10px;border-radius:10px;cursor:pointer;font:inherit}
+.site-btn:hover{background:var(--side-2)}
+.site-btn[aria-pressed=true]{background:var(--side-2);border-color:rgba(255,255,255,.14)}
+.site-btn .ini{width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-weight:700;font-size:12px;flex:none}
+.site-btn .nm{font-weight:600;font-size:13.5px;line-height:1.2}
+.site-btn .sc{font-size:11px;color:var(--side-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.side-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:14px;font-size:12px;color:var(--side-muted);line-height:1.55}
+.side-foot b{color:var(--side-ink);display:block;font-size:12.5px;margin-bottom:4px}
+main{min-width:0}
+.topbar{display:flex;align-items:center;gap:10px;padding:14px 40px;border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:2}
+.crumb{color:var(--muted);font-size:13px}.crumb b{color:var(--ink);font-weight:600}
+.crumb span{margin:0 8px;color:var(--muted)}
+.topbar .sp{flex:1}
+.toplink{font-size:13px;color:var(--ink);display:inline-flex;gap:6px;align-items:center;padding:6px 10px;border-radius:8px}
+.toplink:hover{background:var(--chip)}
+.wrap{padding:36px 40px 60px;max-width:1240px}
+.eyebrow{font-size:11px;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;margin:0 0 8px}
+h1{margin:0 0 6px;font-size:34px;letter-spacing:-.02em;line-height:1.1}
+.lead{color:var(--muted);margin:0 0 26px;font-size:14.5px}
+.hero{display:flex;align-items:center;gap:22px;background:var(--hero);border:1px solid var(--hero-line);border-radius:16px;padding:24px 28px;margin-bottom:34px}
+.hero .ic{width:64px;height:64px;border-radius:16px;background:var(--card);border:1px solid var(--hero-line);display:grid;place-items:center;color:var(--accent);flex:none}
+.hero .tx{flex:1}
+.hero h2{margin:2px 0 4px;font-size:22px;letter-spacing:-.01em}
+.hero p{margin:0;color:var(--muted)}
+.hero .user{display:inline-flex;align-items:center;gap:8px;margin-top:10px;background:var(--card);border:1px solid var(--hero-line);border-radius:8px;padding:5px 10px;font-size:13px}
+.hero .user code{font:600 13px ui-monospace,Menlo,monospace;color:var(--ink)}
+.copy{border:0;background:transparent;color:var(--muted);cursor:pointer;font:inherit;font-size:12px;padding:0 2px}
+.copy:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);padding:12px 20px;border-radius:12px;font-weight:600;white-space:nowrap}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.tools{display:flex;gap:10px;align-items:center;margin:0 0 26px;flex-wrap:wrap}
+.search{flex:1;min-width:240px;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.search input{border:0;outline:0;background:transparent;color:var(--ink);font:inherit;font-size:14px;width:100%}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12.5px}
+.pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:600;background:var(--chip);color:var(--muted)}
+.pill.ok{color:var(--ok)}.pill.warn{color:var(--warn)}.pill.ext{color:var(--ext)}
+.group{margin:0 0 34px}
+.ghead{display:flex;align-items:flex-end;gap:14px;margin-bottom:14px}
+.ghead h3{margin:0;font-size:19px;letter-spacing:-.01em}
+.ghead p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.ghead .cnt{margin-left:auto;font-size:12px;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 10px;white-space:nowrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px 40px;display:flex;flex-direction:column;gap:12px;position:relative;transition:box-shadow .15s,border-color .15s}
+.card:hover{box-shadow:0 6px 18px rgba(20,35,29,.08);border-color:#cfd6cc}
+.card.done{opacity:.6}
+.card .row{display:flex;gap:14px;align-items:flex-start}
+.tile{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;flex:none}
+.tile.t1{background:var(--t1);color:var(--t1i)}.tile.t2{background:var(--t2);color:var(--t2i)}.tile.t3{background:var(--t3);color:var(--t3i)}.tile.t4{background:var(--t4);color:var(--t4i)}
+.card .nm{font-weight:600;font-size:15px;line-height:1.25;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.card .desc{color:var(--muted);font-size:12.5px;margin-top:3px;line-height:1.45}
+.card .go{margin-left:auto;color:var(--muted);flex:none;padding:4px;border-radius:8px}
+.card .go:hover{color:var(--ink);background:var(--chip)}
+.links{display:flex;flex-wrap:wrap;gap:6px}
+.links a{font:12px ui-monospace,Menlo,monospace;background:var(--chip);border:1px solid transparent;color:var(--ink);padding:3px 8px;border-radius:7px}
+.links a:hover{border-color:var(--line);background:var(--card)}
+.chk{position:absolute;right:14px;bottom:12px;display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none}
+.chk input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer}
+.empty{color:var(--muted);padding:40px 0;text-align:center}
+.menu-btn{display:none}
+@media (max-width:900px){.layout{grid-template-columns:1fr}aside{position:static;height:auto}.sites{flex-direction:row;flex-wrap:wrap}.site-btn{width:auto}.site-btn .sc{display:none}.side-foot{display:none}.topbar,.wrap{padding-left:16px;padding-right:16px}h1{font-size:28px}.hero{flex-direction:column;align-items:flex-start}}
 </style>
 </head>
 <body>
-<header>
-  <h1>Metaframer Test Panosu</h1>
-  <p class="sub">bench-0022 · Frappe v16 · 8 site · 56 uygulama. Her uygulama için siteden doğrudan açılan adres. Önce ilgili siteye giriş yap, sonra bağlantıya tıkla. Kutuyu işaretle, kontrol ettiğin bu tarayıcıda hatırlanır.</p>
-  <div class="tools">
-    <input type="search" id="q" placeholder="Uygulama veya site ara… (ör. whatsapp, pos, healthcare)">
-    <span class="count" id="count"></span>
+<div class="layout">
+<aside>
+  <div class="brand">
+    <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg></div>
+    <div><b>metaframer</b><small>test panosu</small></div>
   </div>
-  <div class="tabs" id="tabs"></div>
-  <div class="legend">
-    <span><span class="badge ok">hazır</span> kurulumla açılır</span>
-    <span><span class="badge warn">ön koşul</span> sitede kayıt açmak gerekir</span>
-    <span><span class="badge ext">dış servis</span> API anahtarı veya ayrı sunucu ister</span>
+  <div class="sect">Siteler</div>
+  <nav class="sites" id="sites"></nav>
+  <div class="side-foot"><b>bench-0022 · Frappe v16</b>8 site, 56 uygulama. Kartlar yeni sekmede açılır. İşaretler bu tarayıcıda saklanır.</div>
+</aside>
+<main>
+  <div class="topbar">
+    <div class="crumb">Test panosu <span>›</span> <b id="crumb">Site</b></div>
+    <div class="sp"></div>
+    <a class="toplink" id="tl-login" target="_blank" rel="noopener">Giriş yap ↗</a>
+    <a class="toplink" id="tl-desk" target="_blank" rel="noopener">Desk'i aç ↗</a>
+    <a class="toplink" id="tl-apps" target="_blank" rel="noopener">Kurulu uygulamalar ↗</a>
   </div>
-</header>
-<main id="main"></main>
-<footer>
-  Bench: press.metaframer.net → Benches → Metaframer v16 Apps. Kullanıcı: erp-test'te demo@demo.com, diğerlerinde test@test.com. Uygulama adları press'teki başlıklardır; adresler DocType adının kebab-case biçimidir.
-</footer>
+  <div class="wrap" id="wrap"></div>
+</main>
+</div>
 <script>
 const BASE=[
  {app:"frappe",links:["/desk"],note:"Desk ana ekranı",tag:"ok"},
@@ -186,37 +230,69 @@ const SITES=[
   {app:"Telephony",links:["/app/tp-twilio-settings","/app/tp-exotel-settings","/app/tp-call-log"],note:"Twilio/Exotel hesabı ister",tag:"ext"},
  ]},
 ];
+const GROUPS=[
+ ["sektor","Sektör uygulamaları","Bu siteyi diğerlerinden ayıran dikey çözümler"],
+ ["iletisim","İletişim ve iş birliği","CRM, destek, mesajlaşma, dosya ve toplantı"],
+ ["entegrasyon","Entegrasyonlar","Kargo, muhasebe, depolama ve kimlik; dış hesap ister"],
+ ["ai","Yapay zekâ","LLM anahtarı girilince çalışır"],
+ ["yetki","Yetki ve geliştirici araçları","Yetki katmanları, düşük kod ve API araçları"],
+ ["rapor","Raporlama","İş zekası"],
+ ["taban","Ortak taban","Her sitede aynı 8 uygulama"],
+];
+const GROUP_OF={
+ "crm":"iletisim","helpdesk":"iletisim","raven":"iletisim","gameplan":"iletisim","Wiki":"iletisim","Frappe Drive":"iletisim","WhatsApp Integration":"iletisim","Telephony":"iletisim","Meet":"iletisim","Mail":"iletisim","Frappe Suite":"iletisim","MINutes Of Meeting":"iletisim","WorkBoard":"iletisim",
+ "ERPNext Shipping":"entegrasyon","LOGO Tiger Integration":"entegrasyon","Yurtiçi Kargo ERPNext":"entegrasyon","DHL eCommerce Cargo":"entegrasyon","Metabase Integration":"entegrasyon","Ecommerce Integrations":"entegrasyon","Frappe S3 Attachment":"entegrasyon","Frappe S3 Improwised":"entegrasyon","OIDC Extended":"entegrasyon","Ghost":"entegrasyon","Frappe Appointment":"entegrasyon",
+ "Ask ALYF":"ai","NextAssist":"ai","Flow":"ai","Frappe Assistant Core":"ai",
+ "Studio":"yetki","builder":"yetki","Doppio":"yetki","Frappe Types":"yetki","Swagger UI":"yetki","DocType Permission":"yetki","Frappe Permission Manager":"yetki",
+ "insights":"rapor",
+};
+const TABAN=new Set(BASE.map(b=>b.app));
 const LBL={ok:"hazır",warn:"ön koşul",ext:"dış servis"};
-let store={};try{store=JSON.parse(localStorage.getItem("mf-checked")||"{}")}catch(e){store={}}
+const ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>';
+const ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>';
+let store={};try{store=JSON.parse(localStorage.getItem("mf-checked")||"{}")}catch(e){}
 function save(){try{localStorage.setItem("mf-checked",JSON.stringify(store))}catch(e){}}
-let active="all";
-const tabs=document.getElementById("tabs");
-[["all","Tümü"],...SITES.map(s=>[s.id,s.title])].forEach(([id,label])=>{const b=document.createElement("button");b.className="tab";b.textContent=label;b.setAttribute("aria-pressed",id===active);b.onclick=()=>{active=id;[...tabs.children].forEach(c=>c.setAttribute("aria-pressed",c===b));render()};tabs.appendChild(b)});
+let active=(location.hash||"").slice(1);if(!SITES.some(s=>s.id===active))active=SITES[0].id;
+let q="";
+const nav=document.getElementById("sites");
+SITES.forEach(s=>{const b=document.createElement("button");b.className="site-btn";b.innerHTML=`<span class="ini">${s.title[0].toUpperCase()}</span><span><span class="nm">${s.title}</span><br><span class="sc">${s.sector}</span></span>`;b.onclick=()=>{active=s.id;location.hash=s.id;render()};nav.appendChild(b)});
+function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
 function render(){
-  const q=(document.getElementById("q").value||"").toLowerCase().trim();
-  const main=document.getElementById("main");main.innerHTML="";let shown=0,total=0;
-  SITES.forEach(s=>{
-    if(active!=="all"&&active!==s.id)return;
-    const host="https://"+s.id+".metaframer.net";
-    const rows=s.apps.filter(a=>!q||a.app.toLowerCase().includes(q)||s.id.includes(q)||a.note.toLowerCase().includes(q));
-    total+=s.apps.length;if(!rows.length)return;shown+=rows.length;
-    const sec=document.createElement("section");sec.className="site";
-    sec.innerHTML=`<h2>${s.title}<a href="${host}/login" target="_blank" rel="noopener">giriş ↗</a><a href="${host}/desk" target="_blank" rel="noopener">desk ↗</a><a href="${host}/app/installed-applications" target="_blank" rel="noopener">kurulu uygulamalar ↗</a></h2>
-    <p class="meta">${s.sector} · kullanıcı ${s.user} · ${s.apps.length} uygulama</p>
-    <table><thead><tr><th></th><th>Uygulama</th><th>Aç</th><th>Not</th></tr></thead><tbody></tbody></table>`;
-    const tb=sec.querySelector("tbody");
-    rows.forEach(a=>{
-      const key=s.id+"|"+a.app;const tr=document.createElement("tr");if(store[key])tr.className="done";
-      tr.innerHTML=`<td class="chk"><input type="checkbox" ${store[key]?"checked":""} title="Kontrol edildi"></td>
-      <td class="app">${a.app} <span class="badge ${a.tag}">${LBL[a.tag]}</span></td>
-      <td class="links">${a.links.map(l=>`<a href="${host}${l}" target="_blank" rel="noopener">${l}</a>`).join("")}</td>
-      <td class="note">${a.note}</td>`;
-      tr.querySelector("input").onchange=e=>{store[key]=e.target.checked;save();tr.className=e.target.checked?"done":""};
-      tb.appendChild(tr)});
-    main.appendChild(sec)});
-  document.getElementById("count").textContent=q||active!=="all"?`${shown} satır`:`${total} uygulama satırı`;
+  const s=SITES.find(x=>x.id===active);const host="https://"+s.id+".metaframer.net";
+  [...nav.children].forEach((b,i)=>b.setAttribute("aria-pressed",SITES[i].id===active));
+  document.getElementById("crumb").textContent=s.title;
+  document.getElementById("tl-login").href=host+"/login";document.getElementById("tl-desk").href=host+"/desk";document.getElementById("tl-apps").href=host+"/app/installed-applications";
+  const done=s.apps.filter(a=>store[s.id+"|"+a.app]).length;
+  const groups=GROUPS.map(([id,title,desc])=>({id,title,desc,apps:s.apps.filter(a=>(TABAN.has(a.app)?"taban":(GROUP_OF[a.app]||"sektor"))===id).filter(a=>!q||a.app.toLowerCase().includes(q)||a.note.toLowerCase().includes(q)||a.links.some(l=>l.includes(q)))})).filter(g=>g.apps.length);
+  let tint=0;
+  const html=`
+  <p class="eyebrow">Test sitesi</p>
+  <h1>${s.title}</h1>
+  <p class="lead">${s.sector} · ${s.apps.length} uygulama · ${done} kontrol edildi</p>
+  <div class="hero">
+    <div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg></div>
+    <div class="tx"><p class="eyebrow" style="margin:0 0 2px">Önce giriş yap</p><h2>${s.id}.metaframer.net</h2><p>Bağlantılar bu sitede açılır; oturum yoksa giriş sayfasına düşer. Chrome ilk girişte parolayı kaydetmeyi teklif eder, kabul edersen sonrakiler tek tık.</p>
+    <div class="user">kullanıcı <code id="u">${s.user}</code><button class="copy" onclick="navigator.clipboard&&navigator.clipboard.writeText('${s.user}');this.textContent='kopyalandı';setTimeout(()=>this.textContent='kopyala',1200)">kopyala</button></div></div>
+    <a class="btn" href="${host}/login" target="_blank" rel="noopener">Giriş yap <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+  <div class="tools">
+    <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" value="${esc(q)}" placeholder="Bu sitede uygulama ara… (ör. whatsapp, pos, kargo)"></label>
+    <div class="legend"><span><span class="pill ok">hazır</span> kurulumla açılır</span><span><span class="pill warn">ön koşul</span> sitede kayıt gerekir</span><span><span class="pill ext">dış servis</span> API veya sunucu ister</span></div>
+  </div>
+  ${groups.length?groups.map(g=>`<section class="group"><div class="ghead"><div><h3>${g.title}</h3><p>${g.desc}</p></div><span class="cnt">${g.apps.length} uygulama</span></div><div class="grid">${g.apps.map(a=>{const key=s.id+"|"+a.app;const t="t"+((tint++%4)+1);const main=host+a.links[0];return`
+    <article class="card${store[key]?" done":""}" data-key="${esc(key)}">
+      <div class="row"><a class="tile ${t}" href="${main}" target="_blank" rel="noopener" title="${esc(a.links[0])}">${ICON}</a>
+        <div style="min-width:0;flex:1"><div class="nm"><a href="${main}" target="_blank" rel="noopener">${esc(a.app)}</a><span class="pill ${a.tag}">${LBL[a.tag]}</span></div><div class="desc">${esc(a.note)}</div></div>
+        <a class="go" href="${main}" target="_blank" rel="noopener" title="Aç">${ARROW}</a></div>
+      <div class="links">${a.links.map(l=>`<a href="${host}${l}" target="_blank" rel="noopener">${l}</a>`).join("")}</div>
+      <label class="chk"><input type="checkbox" ${store[key]?"checked":""}> kontrol edildi</label>
+    </article>`}).join("")}</div></section>`).join(""):`<div class="empty">Bu sitede "${esc(q)}" ile eşleşen uygulama yok.</div>`}`;
+  const wrap=document.getElementById("wrap");wrap.innerHTML=html;
+  const qi=document.getElementById("q");qi.addEventListener("input",e=>{q=e.target.value.toLowerCase().trim();const pos=e.target.selectionStart;render();const n=document.getElementById("q");n.focus();n.setSelectionRange(pos,pos)});
+  wrap.querySelectorAll(".chk input").forEach(inp=>inp.onchange=e=>{const card=e.target.closest(".card");store[card.dataset.key]=e.target.checked;save();card.classList.toggle("done",e.target.checked);document.querySelector(".lead").textContent=`${s.sector} · ${s.apps.length} uygulama · ${s.apps.filter(a=>store[s.id+"|"+a.app]).length} kontrol edildi`});
 }
-document.getElementById("q").addEventListener("input",render);render();
+window.addEventListener("hashchange",()=>{const h=location.hash.slice(1);if(SITES.some(s=>s.id===h)&&h!==active){active=h;render()}});
+render();
 </script>
 </body>
 </html>
